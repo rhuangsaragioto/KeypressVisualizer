@@ -12,6 +12,12 @@ int main() {
 
     KeypressVisualizer visualizer;
 
+    sf::Texture t;
+    if (!t.loadFromFile("assets/background_image.png")) {
+        throw std::runtime_error("Something went wrong when loading the image.");
+    }
+    sf::Sprite background(t);
+
     sf::Clock clock;
     
     while (window.isOpen()) {
@@ -26,6 +32,7 @@ int main() {
         visualizer.update(dt);
 
         window.clear(sf::Color(sf::Color::Transparent));
+        window.draw(background);
         window.draw(visualizer);
         window.display();
     }
