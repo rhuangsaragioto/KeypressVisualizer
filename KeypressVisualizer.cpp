@@ -2,6 +2,7 @@
 
 #include "KeypressVisualizer.hpp"
 #include <stdexcept>
+#include <random>
 
 // Some consts to make my life easier lmao
 
@@ -22,8 +23,8 @@ static const float ROW_2Y = 10.f + (SLOT * 2.f);
 static const float ROW_3X = ((2320.f - 1382.f) / 2.f) - 48.9f;
 static const float ROW_3Y = 10.f + (SLOT * 3);
 
-static const sf::Color HIGHLIGHT  = sf::Color(100, 200, 255, 255); // bright blue
-static const sf::Color BASE_COLOR = sf::Color::White; // white (unpressed)
+static const sf::Color BASE_COLOR = sf::Color::White;
+
 
 static const float FADE_SPEED = 2.f;
 
@@ -70,8 +71,15 @@ static const KeyInfo KEY_DATA[] = {
     { SPACE, {ROW_3X, ROW_3Y}, true }
 };
 
+sf::Color genRandomColor(unsigned long key) {
+    std::minstd_rand0 rng(key);
+    std::uniform_int_distribution<int> dist(0, 255);
+
+    return sf::Color(dist(rng), dist(rng), dist(rng));
+}
+
 KeypressVisualizer::KeypressVisualizer() {
-    if (!_keyTexture.loadFromFile("key_spritesheet.png")) {
+    if (!_keyTexture.loadFromFile("assets/key_spritesheet.png")) {
         throw std::runtime_error("Failed to load the spritesheet.");
     }
 
@@ -103,6 +111,7 @@ void KeypressVisualizer::handleEvent(const sf::Event& event) {
             if (kd._key == keyPressed->scancode) {
                 kd._pressed = true;
                 kd._pressTimer = 1.f;
+                kd._highlight = genRandomColor(std::chrono::system_clock::now().time_since_epoch().count());
             }
         }
     }
@@ -116,19 +125,20 @@ void KeypressVisualizer::handleEvent(const sf::Event& event) {
 }
 
 void KeypressVisualizer::update(float dt) {
+    
     for (KeyDisplay& kd : _keyList) {
         if (!kd._pressed && (kd._pressTimer > 0.f)) {
             kd._pressTimer -= dt * FADE_SPEED;
             if (kd._pressTimer < 0.f)
-                kd._pressTimer = 0.f;
+            kd._pressTimer = 0.f;
         }
-
+        
         float time_squared = kd._pressTimer * kd._pressTimer;
-
+        
         sf::Color hue(
-            static_cast<uint8_t>(BASE_COLOR.r + (HIGHLIGHT.r - BASE_COLOR.r) * time_squared),
-            static_cast<uint8_t>(BASE_COLOR.g + (HIGHLIGHT.r - BASE_COLOR.g) * time_squared),
-            static_cast<uint8_t>(BASE_COLOR.b + (HIGHLIGHT.b - BASE_COLOR.b) * time_squared)
+            static_cast<uint8_t>(BASE_COLOR.r + (kd._highlight.r - BASE_COLOR.r) * time_squared),
+            static_cast<uint8_t>(BASE_COLOR.g + (kd._highlight.g - BASE_COLOR.g) * time_squared),
+            static_cast<uint8_t>(BASE_COLOR.b + (kd._highlight.b - BASE_COLOR.b) * time_squared)
         );
         kd._keySprite.setColor(hue);
     }
