@@ -25,7 +25,6 @@ static const float ROW_3Y = 10.f + (SLOT * 3);
 
 static const sf::Color BASE_COLOR = sf::Color::White;
 
-
 static const float FADE_SPEED = 2.f;
 
 struct KeyInfo {
