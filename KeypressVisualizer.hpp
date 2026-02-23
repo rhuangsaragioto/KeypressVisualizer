@@ -14,6 +14,7 @@
 struct KeyDisplay {
     sf::Keyboard::Scan _key;
     sf::Sprite _keySprite;
+    sf::Color _highlight;
     float _pressTimer = 0.f;
     bool _pressed = false;
 };
