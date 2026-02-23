@@ -9,6 +9,8 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <vector>
 
+#include "keys.hpp"
+
 struct KeyDisplay {
     sf::Keyboard::Scan _key;
     sf::Sprite _keySprite;
@@ -16,16 +18,16 @@ struct KeyDisplay {
     bool _pressed = false;
 };
 
-class KeypressVisualizer : sf::Drawable {
+class KeypressVisualizer : public sf::Drawable {
  private:
     std::vector<KeyDisplay> _keyList;
     sf::Texture _keyTexture;
-
+    
  protected:
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
  public:
-    KeypressVisualizer(/* args */);
+    KeypressVisualizer();
     ~KeypressVisualizer();
 
     void handleEvent(const sf::Event& event);

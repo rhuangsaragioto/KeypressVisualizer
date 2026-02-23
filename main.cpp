@@ -4,8 +4,7 @@
 #include <SFML/Window.hpp>
 #include <iostream>
 
-int main()
-{
+int main() {
     sf::RenderWindow window(sf::VideoMode({1280, 720}), "Keypress Visualizer");
 
     sf::Font font;
@@ -13,16 +12,21 @@ int main()
 
     KeypressVisualizer visualizer;
 
-    while (window.isOpen())
-    {
-        while (const std::optional event = window.pollEvent())
-        {
+    sf::Clock clock;
+    
+    while (window.isOpen()) {
+        float dt = clock.restart().asSeconds();
+
+        while (const std::optional event = window.pollEvent()) {
             if (event->is<sf::Event::Closed>())
                 window.close();
             visualizer.handleEvent(*event);
         }
-        window.clear(sf::Color(0xFFD3BAFF));
-        window.draw(text);
+
+        visualizer.update(dt);
+
+        window.clear(sf::Color(sf::Color::Transparent));
+        window.draw(visualizer);
         window.display();
     }
 }
